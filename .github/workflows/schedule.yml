@@ -13,7 +13,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        if: steps.check.outputs.run != 'false'
         uses: actions/checkout@v4
         with:
           fetch-tags: true
@@ -28,7 +27,7 @@ jobs:
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
 
           if git show-ref --tags --quiet --verify "refs/tags/$TAG"; then
-            echo "Already processed"
+            echo "Already processed."
             echo "run=false" >> "$GITHUB_OUTPUT"
           else
             echo "New version detected."
