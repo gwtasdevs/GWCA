@@ -1,0 +1,43 @@
+name: Check for releases
+
+on:
+  schedule:
+    - cron: 0 * * * *
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for latest release
+        id: check
+        run: |
+          TAG=$(gh api repos/gwdevhub/GWToolboxpp/releases/latest --jq .tag_name)
+          echo "Latest upstream release tag: $TAG"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+          if git tag -l | grep -q "$TAG"; then
+            echo "Already processed"
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+      - name: Install rust
+        if: steps.check.outputs.run != 'false'
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Download & patch gwca.dll
+        if: steps.check.outputs.run != 'false'
+        run: |
+          curl -L https://raw.githubusercontent.com/gwdevhub/GWToolboxpp/${{ steps.check.outputs.tag }}/Dependencies/GWCA/bin/gwca.dll
+          cargo run:
+
+      - name: Publish modified gwca.dll to github
+        if: steps.check.outputs.run != 'false'
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ steps.check.outputs.tag }}
+          files: gwca.dll
