@@ -26,6 +26,8 @@ jobs:
           echo "Latest upstream release tag: $TAG"
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
 
+          git tag
+
           if git show-ref --tags --quiet --verify "refs/tags/$TAG"; then
             echo "Already processed."
             echo "run=false" >> "$GITHUB_OUTPUT"
