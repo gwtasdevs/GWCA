@@ -12,6 +12,10 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        if: steps.check.outputs.run != 'false'
+        uses: actions/checkout@v4
+
       - name: Check for latest release
         id: check
         env:
@@ -26,10 +30,6 @@ jobs:
             echo "run=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-
-      - name: Checkout repository
-        if: steps.check.outputs.run != 'false'
-        uses: actions/checkout@v4
 
       - name: Install rust
         if: steps.check.outputs.run != 'false'
