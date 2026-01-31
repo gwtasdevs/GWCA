@@ -15,6 +15,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
+          fetch-depth: 0
           fetch-tags: true
 
       - name: Check for latest release
@@ -22,7 +23,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          export TAG=$(gh api repos/gwdevhub/GWToolboxpp/releases/latest --jq .tag_name)
+          TAG=$(gh api repos/gwdevhub/GWToolboxpp/releases/latest --jq .tag_name)
           echo "Latest upstream release tag: $TAG"
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
 
